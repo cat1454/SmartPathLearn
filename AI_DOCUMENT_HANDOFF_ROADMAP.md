@@ -67,9 +67,10 @@ Roadmap nay bam sat trang thai repo hien tai, khong viet theo kieu wishlist chun
 | 0 | Chot contract schema | Done (2026-04-09) | 1 schema thong nhat |
 | 1 | Frontend vertical slice | Done (2026-04-09) | Tao -> validate -> luu -> xem lai |
 | 2 | UX validation / repair | Done (2026-04-09) | Nguoi dung dan payload de dung on dinh |
-| 3 | Storage nang cap | Chua bat dau | SQLite + list API co ban |
 | 4 | Hardening va test | Chua bat dau | Test mo rong + reject case day du |
-| 5 | Demo / pilot | Chua bat dau | Co ban demo dung duoc |
+| 3 | Cloud persistence | Chua bat dau | Cloud SQL Postgres thay JSON store |
+| 5 | Deploy len Cloud Run | Chua bat dau | Ban chay duoc tren Google Cloud |
+| 6 | Demo / pilot | Chua bat dau | Co flow noi bo de dung thu |
 
 ---
 
@@ -240,46 +241,49 @@ Dung it nhat 5 case:
 
 ---
 
-## Moc 3 - Nang cap storage va list API
+## Moc 3 - Cloud persistence voi Cloud SQL Postgres
 
 ### Muc tieu
 
-Thoat khoi JSON store muc demo, len muc dung duoc on dinh hon.
+Thoat khoi JSON store muc demo, dua backend len storage dung duoc that tren Google Cloud.
 
 ### Viec can lam
 
-1. Doi storage tu JSON file sang SQLite
-2. Tao bang:
+1. Tach `JsonStore` thanh storage interface ro rang
+2. Tao Postgres-backed store cho Cloud SQL
+3. Tao bang:
    - `source_packs`
    - `activities`
    - `submissions`
    - `feedbacks`
-3. Them endpoint list:
-   - `GET /source-packs`
-   - `GET /activities`
-4. Them filter co ban:
-   - `activity_type`
-   - `lesson_title`
-5. Giu backward-compatible response shape neu co the
+4. Giu route va response shape hien tai
+5. Them config runtime:
+   - `HANDOFF_STORAGE_BACKEND=postgres`
+   - `HANDOFF_DATABASE_URL`
+6. Viet migration/bootstrapping schema cho local dev va Cloud SQL
+7. Neu them list API thi lam sau khi persistence da on, khong de no chan migration
 
 ### Dieu kien hoan thanh
 
-1. Khong phu thuoc file JSON de chay app
-2. List page co du du lieu de lam UI quan sat
-3. Restart server khong mat du lieu
+1. Khong phu thuoc file JSON de chay app tren môi truong cloud
+2. Restart app khong mat du lieu
+3. Detail flow hien tai van chay voi route cu
+4. Test save/load chay duoc voi Postgres backend
 
 ### Verify bat buoc
 
 1. Tao 2 source pack
 2. Tao 2 activity
-3. Restart app
-4. Goi lai list endpoint va detail endpoint
+3. Save submission + feedback
+4. Restart app
+5. Goi lai detail endpoint va doi chieu du lieu
+6. Chay full test suite voi backend `postgres`
 
 ### Danh gia tien do sau khi xong
 
 - Persistence: `0/1/2`
-- List endpoint: `0/1/2`
-- Filter co ban: `0/1/2`
+- Runtime config: `0/1/2`
+- Backward compatibility: `0/1/2`
 - Tong ket:
   - `0-2`: chua dat
   - `3-4`: dat mot phan
@@ -291,7 +295,7 @@ Thoat khoi JSON store muc demo, len muc dung duoc on dinh hon.
 
 ### Muc tieu
 
-Giam bug contract va regression truoc khi dua cho nguoi khac dung that.
+Giam bug contract va regression truoc khi doi storage va dua len cloud.
 
 ### Viec can lam
 
@@ -300,6 +304,7 @@ Giam bug contract va regression truoc khi dua cho nguoi khac dung that.
 3. Them test save/load voi cac `activity_type` khac ngoai `case_mission`
 4. Them test UI cho flow paste payload neu co frontend
 5. Review lai message error cho de dung
+6. Chot lai reject case Wave 1 de M3 khong phai sua contract nua
 
 ### Dieu kien hoan thanh
 
@@ -331,15 +336,62 @@ Neu da co frontend test:
 
 ---
 
-## Moc 5 - Ban demo / pilot
+## Moc 5 - Deploy len Cloud Run
 
 ### Muc tieu
 
-Ra duoc 1 ban demo co the dua cho user noi bo dung thu.
+Dua backend/frontend slice len Google Cloud o muc co the dung va verify duoc.
 
 ### Viec can lam
 
-1. Lam landing route cho handoff tool
+1. Viet `Dockerfile` cho app FastAPI + UI shell
+2. Them config env cho Cloud Run:
+   - `HANDOFF_STORAGE_BACKEND`
+   - `HANDOFF_DATABASE_URL` hoac Cloud SQL binding
+   - `PORT`
+3. Cau hinh ket noi Cloud SQL Postgres
+4. Chot health check va startup command
+5. Neu co file upload/export thi noi Cloud Storage bucket cho object/file
+6. Viet huong dan deploy `gcloud run deploy`
+
+### Dieu kien hoan thanh
+
+1. App len duoc Cloud Run
+2. App doc/ghi duoc Cloud SQL
+3. Route `/health` va flow handoff co the verify duoc sau deploy
+4. Cloud Storage chi dung cho file/object, khong la he thong record chinh
+
+### Verify bat buoc
+
+1. Build image thanh cong
+2. Deploy len Cloud Run thanh cong
+3. Goi `/health`
+4. Tao 1 `source_pack`
+5. Tao 1 `activity`
+6. Save 1 `submission`
+7. Save 1 `feedback`
+
+### Danh gia tien do sau khi xong
+
+- Cloud deploy: `0/1/2`
+- DB connectivity: `0/1/2`
+- Runtime verification: `0/1/2`
+- Tong ket:
+  - `0-2`: chua dat
+  - `3-4`: dat mot phan
+  - `5-6`: dat
+
+---
+
+## Moc 6 - Ban demo / pilot
+
+### Muc tieu
+
+Ra duoc 1 ban demo sau khi da co cloud runtime on dinh.
+
+### Viec can lam
+
+1. Lam landing route cho handoff tool neu can
 2. Lam list page co ban:
    - source packs
    - activities
@@ -382,14 +434,17 @@ Neu chi lam theo thu tu thuc chien nhat, thi:
 2. **Moc 1** - Frontend vertical slice
 3. **Moc 2** - UX validation va repair
 4. **Moc 4** - Hardening va test expansion
-5. **Moc 3** - Nang cap storage va list API
-6. **Moc 5** - Ban demo / pilot
+5. **Moc 3** - Cloud persistence voi Cloud SQL Postgres
+6. **Moc 5** - Deploy len Cloud Run
+7. **Moc 6** - Ban demo / pilot
 
 Ly do:
 
 - Neu contract chua chot, frontend se code sai huong
 - Neu chua co vertical slice, storage tot hon cung chua giup demo
 - Hardening sau khi co flow that se hieu qua hon
+- Cloud SQL nen duoc dua vao sau khi reject case va regression da chac
+- Cloud Storage chi dung cho file/object, khong dung lam DB trong huong nay
 
 ## Mau checkpoint bat buoc sau moi moc
 
@@ -438,7 +493,7 @@ Ly do:
 
 - contract va vertical slice da co diem dung ro
 - M2 da giam ma sat nguoi dung o lop UX va validation
-- buoc tiep theo hop ly nhat la mo rong test reject case va tang do tin cay truoc khi nang cap storage
+- buoc tiep theo hop ly nhat la mo rong test reject case va tang do tin cay truoc khi doi sang Cloud SQL va deploy cloud
 
 ## Checkpoint - Moc 0
 

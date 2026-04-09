@@ -6,6 +6,7 @@ Screen walkthrough:
 - xem screen spec chi tiet o `AI_DOCUMENT_HANDOFF_WEB_SCREEN_SPEC.md`
 - xem frontend implementation spec o `AI_DOCUMENT_HANDOFF_FRONTEND_IMPLEMENTATION_SPEC.md`
 - xem roadmap thuc thi o `AI_DOCUMENT_HANDOFF_ROADMAP.md`
+- xem huong ha tang Google Cloud o `AI_DOCUMENT_HANDOFF_GOOGLE_CLOUD_PLAN.md`
 
 ## Muc tieu da chot
 

@@ -23,6 +23,17 @@ Mac dinh storage file nam tai:
 
 - `.handoff_api_store.json`
 
+Huong ha tang da chot neu di Google Cloud:
+
+- M4 hardening/test truoc
+- sau do doi sang `Cloud SQL Postgres`
+- deploy len `Cloud Run`
+- `Cloud Storage` chi dung cho file/object, khong dung lam DB
+
+Xem them:
+
+- `AI_DOCUMENT_HANDOFF_GOOGLE_CLOUD_PLAN.md`
+
 ## Frontend vertical slice
 
 Frontend M1 duoc serve cung server FastAPI, khong can them dev server rieng.

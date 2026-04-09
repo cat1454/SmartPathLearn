@@ -260,6 +260,41 @@ Con lai:
 - Moc 1 da xong.
 - Buoc hop ly tiep theo la `Moc 2 - UX validation va repair`.
 
+## 2026-04-09 14:05
+
+Prompt:
+- Chot huong Google Cloud theo thu tu:
+  - `Moc 4` truoc
+  - doi `Moc 3` thanh cloud persistence voi `Cloud SQL Postgres`
+  - sau do deploy len `Cloud Run`
+  - `Cloud Storage` chi dung cho file/object, khong dung lam DB
+
+Thay doi:
+- Cap nhat `AI_DOCUMENT_HANDOFF_ROADMAP.md`:
+  - doi bang tien do de phan uu tien thanh `0 -> 1 -> 2 -> 4 -> 3 -> 5 -> 6`
+  - doi `Moc 3` tu SQLite/list API sang `Cloud SQL Postgres`
+  - doi `Moc 5` thanh deploy len `Cloud Run`
+  - day `Ban demo / pilot` xuong `Moc 6`
+- Tao `AI_DOCUMENT_HANDOFF_GOOGLE_CLOUD_PLAN.md` de chot:
+  - kien truc `Cloud Run + Cloud SQL Postgres + Cloud Storage`
+  - vai tro tung service
+  - storage abstraction plan
+  - bang du lieu Postgres de xuat
+  - checklist/acceptance cho `Moc 4`, `Moc 3`, `Moc 5`
+- Cap nhat `AI_DOCUMENT_HANDOFF_WORKFLOW_V2.md` de link sang plan GCP.
+- Cap nhat `README_handoff_api.md` de note huong ha tang da chot.
+
+Verify:
+- Da doi chieu roadmap va plan GCP de dam bao:
+  - `Cloud Storage` chi duoc ghi nhan la file/object store
+  - `Cloud SQL Postgres` la he thong record chinh
+  - `Moc 4` duoc dat truoc `Moc 3`
+  - `Cloud Run` duoc dat sau cloud persistence
+
+Con lai:
+- Chua doi code runtime sang Postgres trong prompt nay.
+- Buoc hop ly tiep theo van la thuc thi `Moc 4 - Hardening va test expansion`, sau do moi vao `Moc 3`.
+
 ## 2026-04-09 14:08
 
 Prompt:
