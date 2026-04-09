@@ -1,0 +1,5 @@
+__pycache__/
+*.py[cod]
+.tmp_testdata/
+.handoff_api_store.json
+.tmp_uvicorn_*
