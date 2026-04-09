@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Document Handoff Screens</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --line: #cfd6e4;
+      --ink: #18212f;
+      --muted: #5b6778;
+      --accent: #0f766e;
+      --soft: #e7f6f3;
+      --warn: #8a5a00;
+      --warn-bg: #fff4db;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .shell {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 6px;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .screen {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .screen-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .screen-head h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .screen-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .screen-body {
+      display: grid;
+      grid-template-columns: 1.9fr 1fr;
+      gap: 0;
+    }
+
+    .ui {
+      padding: 18px;
+      border-right: 1px solid var(--line);
+      background: #fbfcfe;
+    }
+
+    .notes {
+      padding: 18px;
+      background: var(--surface);
+    }
+
+    .window {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .window-bar {
+      height: 38px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 12px;
+      background: #f7f9fc;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #c2cad8;
+    }
+
+    .window-main {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .layout-2 {
+      display: grid;
+      grid-template-columns: 1.25fr .95fr;
+      gap: 14px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      padding: 14px;
+    }
+
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 12px;
+      background: #fcfdff;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .row strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+
+    .row span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      min-width: 124px;
+    }
+
+    .btn.alt {
+      background: var(--surface);
+      color: var(--accent);
+    }
+
+    .btn.ghost {
+      background: var(--surface);
+      color: var(--muted);
+      border-color: var(--line);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .textarea {
+      min-height: 148px;
+      border: 1px dashed var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      padding: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+
+    .ok {
+      border: 1px solid #bfe5dd;
+      background: var(--soft);
+      color: #0b5d58;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    .warn {
+      border: 1px solid #f1d69f;
+      background: var(--warn-bg);
+      color: var(--warn);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 14px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    li + li {
+      margin-top: 6px;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      background: #eef2f8;
+      color: var(--muted);
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .disabled {
+      opacity: .55;
+    }
+
+    @media (max-width: 980px) {
+      .screen-body,
+      .layout-2,
+      .mini-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .ui {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div>
+        <h1 class="title">AI Document Handoff Screens</h1>
+        <p class="subtitle">Wireframe nay dung de nhin nhanh flow V2: source pack, authoring payload, student submission, feedback payload, va repair loop.</p>
+      </div>
+      <div class="legend">
+        <div class="chip">Web nghiem format</div>
+        <div class="chip">LLM lam phan nang</div>
+        <div class="chip">Copy-paste co marker</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="screen">
+        <div class="screen-head">
+          <div>
+            <h2>Screen 1 - Chon bai hoc va tao Source Pack</h2>
+            <p>Khoi dong dung 1 bai hoac 1 chuong, khong tron nhieu bai cung luc.</p>
+          </div>
+          <span class="badge">Tang 1</span>
+        </div>
+        <div class="screen-body">
+          <div class="ui">
+            <div class="window">
+              <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <div class="window-main">
+                <div class="layout-2">
+                  <div class="panel">
+                    <h3>Bai hoc dang chon</h3>
+                    <div class="list">
+                      <div class="row">
+                        <div>
+                          <strong>Chu de he ho hap</strong>
+                          <span>lop 8 • 1 bai • 4 tai lieu text/PDF</span>
+                        </div>
+                        <span class="badge">Ready</span>
+                      </div>
+                      <div class="row">
+                        <div>
+                          <strong>Tai lieu dinh kem</strong>
+                          <span>01_muc_tieu.txt, 02_ly_thuyet.pdf, 03_vi_du.docx, 04_ghi_chu.txt</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel">
+                    <h3>Hanh dong</h3>
+                    <div class="stack">
+                      <div class="btn">Copy prompt Source Pack</div>
+                      <div class="btn alt">Paste SOURCE_PACK</div>
+                      <div class="btn ghost">Preview source pack</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ok">Chi 1 bai, 1 chuong, 1 lan import. Neu tai lieu qua dai, chia theo section.</div>
+              </div>
+            </div>
+          </div>
+          <div class="notes">
+            <h3>Y nghia</h3>
+            <ul>
+              <li>Day la diem vao chung cho tat ca mode ve sau.</li>
+              <li>Web chi luu `source_pack_ref`, khong tu rut y tu tai lieu.</li>
+              <li>Neu AI tra sai marker `SOURCE_PACK`, web reject va dua prompt repair.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen">
+        <div class="screen-head">
+          <div>
+            <h2>Screen 2 - Thu vien format Wave 1</h2>
+            <p>Chon 1 format moi lan authoring.</p>
+          </div>
+          <span class="badge">Tang 2</span>
+        </div>
+        <div class="screen-body">
+          <div class="ui">
+            <div class="window">
+              <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <div class="window-main">
+                <div class="mini-grid">
+                  <div class="row"><div><strong>Case Mission</strong><span>Tinh huong, task, expected points</span></div><span class="badge">Core</span></div>
+                  <div class="row"><div><strong>Error Hunt</strong><span>Artifact sai, tim loi va sua</span></div><span class="badge">Core</span></div>
+                  <div class="row"><div><strong>Explain Back</strong><span>Hoc sinh giai thich lai cho nguoi khac</span></div><span class="badge">Core</span></div>
+                  <div class="row"><div><strong>Mini Project</strong><span>Tao san pham nho co dau ra that</span></div><span class="badge">Core</span></div>
+                  <div class="row"><div><strong>Debate / Defend</strong><span>Chon lap truong va bao ve</span></div><span class="badge">Core</span></div>
+                  <div class="row disabled"><div><strong>Decision Path</strong><span>Phase sau vi can state va branch</span></div><span class="badge">Later</span></div>
+                  <div class="row disabled"><div><strong>Speed Challenge</strong><span>Phase sau vi can timer / rapid loop</span></div><span class="badge">Later</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="notes">
+            <h3>Y nghia</h3>
+            <ul>
+              <li>UI nen khoa ro nhung format nao la Wave 1 va nhung format nao de sau.</li>
+              <li>Moi format map vao 1 `activity_type` duy nhat trong V2.</li>
+              <li>Khong co prompt tu do; moi format co prompt authoring va feedback rieng.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen">
+        <div class="screen-head">
+          <div>
+            <h2>Screen 3 - Copy prompt va nhan Activity Authoring Payload</h2>
+            <p>Web dua prompt, AI ngoai tra ve payload co marker V2.</p>
+          </div>
+          <span class="badge">Authoring</span>
+        </div>
+        <div class="screen-body">
+          <div class="ui">
+            <div class="window">
+              <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <div class="window-main">
+                <div class="layout-2">
+                  <div class="panel">
+                    <h3>Prompt dang copy</h3>
+                    <div class="textarea">Ban la nguoi thiet ke hoat dong `case_mission`...
+
+Du lieu nguon:
+{source_pack_json}
+
+Tra ve dung:
+<<<ACTIVITY_PAYLOAD_V2_START>>>
+...
+<<<ACTIVITY_PAYLOAD_V2_END>>></div>
+                  </div>
+                  <div class="panel">
+                    <h3>Config</h3>
+                    <div class="list">
+                      <div class="row">
+                        <div>
+                          <strong>Source pack</strong>
+                          <span>sp_sinh_hoc_001</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div>
+                          <strong>Activity type</strong>
+                          <span>case_mission</span>
+                        </div>
+                      </div>
+                      <div class="toolbar">
+                        <div class="btn">Copy prompt</div>
+                        <div class="btn alt">Paste payload</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="warn">Payload phai co `payload_type`, `activity_type`, `source_pack_ref`, `instructions`, `activity_data`.</div>
+              </div>
+            </div>
+          </div>
+          <div class="notes">
+            <h3>Y nghia</h3>
+            <ul>
+              <li>Screen nay giup team nhin ro: web khong tu sinh authoring.</li>
+              <li>Web chi dua input da khoa san va nhan output co marker.</li>
+              <li>Neu chuyen sang GPT, Gemini hay Claude thi parser van giu nguyen.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen">
+        <div class="screen-head">
+          <div>
+            <h2>Screen 4 - Paste payload, validate, preview, repair</h2>
+            <p>Day la man hinh quan trong nhat cua triet ly “web nghiem format”.</p>
+          </div>
+          <span class="badge">Validate</span>
+        </div>
+        <div class="screen-body">
+          <div class="ui">
+            <div class="window">
+              <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <div class="window-main">
+                <div class="panel">
+                  <h3>Payload vua paste</h3>
+                  <div class="textarea">&lt;&lt;&lt;ACTIVITY_PAYLOAD_V2_START&gt;&gt;&gt;
+{
+  "payload_type": "activity_authoring",
+  "activity_type": "error_hunt",
+  ...
+}
+&lt;&lt;&lt;ACTIVITY_PAYLOAD_V2_END&gt;&gt;&gt;</div>
+                </div>
+                <div class="layout-2">
+                  <div class="ok">Validate ok: schema hop le, marker dung, `activity_type` nam trong Wave 1.</div>
+                  <div class="warn">Validate fail: thieu `activity_data.reference_points`. Copy prompt repair de sua format.</div>
+                </div>
+                <div class="toolbar">
+                  <div class="btn">Import activity</div>
+                  <div class="btn alt">Copy repair prompt</div>
+                  <div class="btn ghost">Preview JSON</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="notes">
+            <h3>Y nghia</h3>
+            <ul>
+              <li>Khong co auto-fix ngam. Hoac hop le, hoac repair.</li>
+              <li>Reject message phai noi ro field nao sai.</li>
+              <li>Preview la de nguoi dung nhin nhanh, nhung import chi mo khi pass validate.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen">
+        <div class="screen-head">
+          <div>
+            <h2>Screen 5 - Hoc sinh nop bai va copy feedback prompt</h2>
+            <p>Feedback van di theo handoff, khong cham runtime trong web.</p>
+          </div>
+          <span class="badge">Submission</span>
+        </div>
+        <div class="screen-body">
+          <div class="ui">
+            <div class="window">
+              <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <div class="window-main">
+                <div class="layout-2">
+                  <div class="panel">
+                    <h3>Bai lam cua hoc sinh</h3>
+                    <div class="textarea">Em chon he ho hap vi benh nhan kho tho va met do thieu oxy...</div>
+                  </div>
+                  <div class="panel">
+                    <h3>Feedback package</h3>
+                    <div class="list">
+                      <div class="row"><div><strong>Activity</strong><span>act_case_001</span></div></div>
+                      <div class="row"><div><strong>Response type</strong><span>free_text</span></div></div>
+                      <div class="toolbar">
+                        <div class="btn">Copy feedback prompt</div>
+                        <div class="btn alt">Paste feedback</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ok">Feedback prompt luon kem `source_pack` + `activity_authoring` + `student_submission`.</div>
+              </div>
+            </div>
+          </div>
+          <div class="notes">
+            <h3>Y nghia</h3>
+            <ul>
+              <li>Screen nay lam ro feedback payload la hop dong thu hai.</li>
+              <li>Hoc sinh co the nop text ngan, bullet, hoac short essay trong Wave 1.</li>
+              <li>Khong co logic “AI feedback live” ben trong web o phase nay.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen">
+        <div class="screen-head">
+          <div>
+            <h2>Screen 6 - Nhan feedback payload va hien ket qua</h2>
+            <p>Feedback sau khi validate duoc luu va hien lai thanh nhan xet co cau truc.</p>
+          </div>
+          <span class="badge">Feedback</span>
+        </div>
+        <div class="screen-body">
+          <div class="ui">
+            <div class="window">
+              <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <div class="window-main">
+                <div class="layout-2">
+                  <div class="panel">
+                    <h3>Ket qua</h3>
+                    <div class="stack">
+                      <div class="row"><div><strong>Danh gia chung</strong><span>partial</span></div></div>
+                      <div class="row"><div><strong>Diem manh</strong><span>Da xac dinh dung he ho hap</span></div></div>
+                      <div class="row"><div><strong>Khoang thieu</strong><span>Chua noi ro co che trao doi khi</span></div></div>
+                      <div class="row"><div><strong>Buoc tiep theo</strong><span>Bo sung vai tro cua oxy va khi carbonic</span></div></div>
+                    </div>
+                  </div>
+                  <div class="panel">
+                    <h3>Action</h3>
+                    <div class="stack">
+                      <div class="btn">Luu feedback</div>
+                      <div class="btn alt">Gan vao lich hoc</div>
+                      <div class="btn ghost">Xem payload goc</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="warn">Neu feedback payload sai marker hoac thieu `next_step`, web khong luu.</div>
+              </div>
+            </div>
+          </div>
+          <div class="notes">
+            <h3>Y nghia</h3>
+            <ul>
+              <li>Feedback hien thi theo cau truc giup dung lai duoc cho roadmap sau nay.</li>
+              <li>`strengths`, `gaps`, `misconceptions`, `next_step` la bo toi thieu can co.</li>
+              <li>Moi format co the co add-on rieng nhu `rubric_breakdown` hoac `logic_gaps`.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</body>
+</html>
