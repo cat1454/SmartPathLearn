@@ -1,0 +1,454 @@
+Trong case của bạn, web không cần là nơi “AI nghĩ”, mà nên là nơi:
+
+đưa chuẩn cách nạp tài liệu
+đưa prompt chuẩn theo từng mode
+nhận kết quả copy-paste từ GPT / Gemini / Claude
+kiểm tra format
+lưu vào hệ thống để hiển thị lại
+
+Đó là mô hình thực tế hơn nhiều.
+
+1) Mô hình nên làm
+
+Thay vì build một hệ thống sinh nội dung hoàn chỉnh trong web, bạn làm 3 lớp:
+
+Lớp 1: Chuẩn hóa đầu vào
+
+Bạn hướng dẫn người dùng chuẩn bị tài liệu theo mẫu cố định.
+
+Lớp 2: Sinh nội dung bằng LLM ngoài
+
+Người dùng đem tài liệu đó vào GPT / Gemini / Claude, dùng prompt do bạn cung cấp.
+
+Lớp 3: Dán ngược lại web của bạn
+
+Web của bạn chỉ cần:
+
+nhận nội dung
+kiểm tra đúng schema
+tách dữ liệu
+lưu vào database
+hiển thị ra bài học / quiz / summary / roadmap
+
+Cách này phù hợp vì ChatGPT có file uploads và Projects để giữ file + ngữ cảnh trong project; Gemini cho phép upload file, Drive, NotebookLM và cũng khuyến nghị cung cấp đúng ngữ cảnh; Claude có Projects với knowledge base, và trên gói trả phí còn tự bật RAG khi knowledge gần chạm giới hạn ngữ cảnh.
+
+2) Luồng làm việc tối ưu cho người dùng
+
+Bạn nên bắt người dùng đi đúng flow này:
+
+Bước 1: Chuẩn bị tài liệu
+
+Mỗi lần chỉ làm 1 chương hoặc 1 bài, không quăng cả môn vào một lượt.
+
+Cấu trúc gợi ý:
+
+01_muc_tieu_bai_hoc.txt
+02_ly_thuyet_chinh.pdf
+03_vi_du_mau.docx
+04_bai_tap_mau.pdf
+05_ghi_chu_giao_vien.txt
+06_tu_khoa_quan_trong.txt
+Bước 2: Chọn mode
+
+Chỉ chọn 1 mode / 1 lần chạy:
+
+Explain
+Practice
+Summary
+Roadmap
+Bước 3: Dùng prompt mẫu của bạn trong GPT / Gemini / Claude
+
+Người dùng upload file + dán prompt.
+
+Bước 4: Yêu cầu AI trả về đúng format
+
+Không nhận văn xuôi tự do. Chỉ nhận:
+
+JSON chuẩn
+hoặc
+block text có tag rõ ràng
+Bước 5: Dán ngược lại web của bạn
+
+Web parse, validate, rồi lưu.
+
+3) Chuẩn tài liệu phải dạy người dùng
+
+Đây là phần quan trọng nhất. Nếu tài liệu đầu vào bẩn, AI nào cũng cho ra nội dung kém.
+
+Nên yêu cầu người dùng:
+mỗi file chỉ chứa 1 loại nội dung
+bỏ bớt trang bìa, footer, watermark, logo lặp
+không trộn nhiều chương trong 1 file
+không đưa ảnh scan mờ nếu có bản text
+ưu tiên PDF text, DOCX, TXT hơn ảnh chụp
+với bài dài, chia nhỏ theo mục
+Quy tắc chia nhỏ rất thực dụng:
+1 file = 1 bài hoặc 1 mục lớn
+1 prompt = 1 nhiệm vụ
+1 lần sinh = 1 output type
+
+Gemini còn nêu rõ rằng file quá lớn có thể làm câu trả lời bỏ sót chi tiết hoặc mất liên kết nội dung; họ khuyên dùng file nhỏ hơn để có kết quả tốt hơn.
+
+4) Nên hướng dẫn dùng công cụ nào ra sao
+ChatGPT
+
+Phù hợp khi người dùng muốn:
+
+upload file và hỏi trực tiếp từ tài liệu
+làm việc theo project cố định
+quay lại tiếp tục nội dung cũ
+
+OpenAI nói ChatGPT hỗ trợ file upload cho các tác vụ tổng hợp, biến đổi và trích xuất thông tin từ tài liệu; Projects có thể nhớ các chat và file trong project. Ngoài ra còn có Data Controls và Temporary Chat để giảm việc lưu nhớ / dùng dữ liệu theo cách người dùng không muốn.
+
+Gemini
+
+Phù hợp khi người dùng muốn:
+
+thêm file từ máy, Drive, NotebookLM
+làm việc với tài liệu học tập khá dài
+tận dụng hệ sinh thái Google Docs / Drive
+
+Google ghi rõ Gemini Apps cho phép upload documents, spreadsheets, NotebookLM notebooks, photos, videos; trong Gemini Docs cũng có thể gắn file làm nguồn bằng @. Google cũng cảnh báo rằng file quá lớn có thể làm Gemini bỏ sót liên hệ hoặc chi tiết. Với dữ liệu nhạy cảm, Gemini có Temporary Chat và Memory có thể tắt.
+
+Claude
+
+Phù hợp khi người dùng muốn:
+
+làm việc theo project có knowledge base
+dùng lại cùng tài liệu nhiều lần
+giữ một bộ ngữ cảnh tương đối ổn định
+
+Anthropic nói Claude Projects cho phép upload tài liệu vào knowledge base; trên gói trả phí, khi gần chạm giới hạn context thì Claude có thể tự bật RAG mode; tài liệu trong project còn có lợi ích caching khi dùng lặp lại. Anthropic cũng khuyên cẩn trọng với tài liệu nhạy cảm và confidential documents.
+
+5) Cách bạn nên chuẩn hóa output
+
+Bạn có 2 lựa chọn:
+
+Cách tốt nhất: JSON
+
+Dễ parse, dễ lưu DB, dễ validate.
+
+Cách dự phòng: block text có tag
+
+Dùng khi model trả JSON lỗi.
+
+Tôi khuyên:
+
+mặc định yêu cầu JSON
+nếu JSON fail, cho người dùng bấm nút “Sửa format” và paste lại vào AI
+6) Prompt gốc để chuẩn hóa tài liệu trước khi sinh nội dung
+
+Đây là prompt đầu tiên. Người dùng phải chạy prompt này trước để biến tài liệu thô thành bản nguồn chuẩn.
+
+Bạn đang đọc các tài liệu đính kèm cho 1 bài/chương học.
+
+Nhiệm vụ:
+1. Chỉ dùng thông tin có trong tài liệu đính kèm
+2. Không thêm kiến thức ngoài tài liệu trừ khi cần nối ý rất ngắn
+3. Chuẩn hóa nội dung thành 1 JSON duy nhất
+4. Nếu thiếu thông tin ở trường nào, để chuỗi rỗng ""
+5. Không viết giải thích ngoài JSON
+
+Trả về đúng schema sau:
+
+{
+  "subject": "",
+  "grade_level": "",
+  "chapter_title": "",
+  "lesson_title": "",
+  "learning_objectives": [],
+  "key_concepts": [],
+  "formulas": [],
+  "events_or_milestones": [],
+  "examples": [],
+  "common_mistakes": [],
+  "prerequisites": [],
+  "source_notes": "",
+  "coverage_warning": ""
+}
+Mục đích
+
+Sau bước này, bạn có một source_pack chuẩn để dùng cho các mode sau.
+
+7) Prompt cho Mode 1 — Giải thích bài học
+
+Người dùng upload tài liệu, hoặc dùng source_pack vừa tạo.
+
+Bạn là gia sư học tập.
+
+Dựa trên dữ liệu dưới đây, hãy giải thích ngắn gọn cho học sinh.
+
+DATA:
+{source_pack_json}
+
+Câu hỏi của học sinh:
+{student_question}
+
+Yêu cầu:
+- giải thích ngắn, dễ hiểu
+- dùng ngôn ngữ phù hợp trình độ
+- cho 1 ví dụ đơn giản
+- không đi xa ngoài bài học
+- tối đa 140 từ
+- trả về JSON duy nhất theo schema:
+
+{
+  "mode": "explain",
+  "subject": "",
+  "grade_level": "",
+  "chapter_title": "",
+  "lesson_title": "",
+  "student_question": "",
+  "explanation": "",
+  "simple_example": "",
+  "check_understanding_question": ""
+}
+8) Prompt cho Mode 3 — Tạo câu hỏi luyện tập
+Bạn là trợ lý tạo bài luyện tập.
+
+Dựa trên dữ liệu dưới đây, hãy tạo câu hỏi ôn tập bám đúng chương.
+
+DATA:
+{source_pack_json}
+
+Thiết lập:
+- difficulty: {difficulty}
+- question_type: {question_type}
+- num_questions: {num_questions}
+
+Yêu cầu:
+- chỉ dùng phạm vi kiến thức trong DATA
+- phù hợp độ khó yêu cầu
+- có đáp án và giải thích ngắn
+- không viết ngoài JSON
+
+Trả về:
+
+{
+  "mode": "practice",
+  "subject": "",
+  "grade_level": "",
+  "chapter_title": "",
+  "lesson_title": "",
+  "difficulty": "",
+  "question_type": "",
+  "questions": [
+    {
+      "question": "",
+      "options": ["", "", "", ""],
+      "correct_answer": "",
+      "explanation": "",
+      "knowledge_tag": ""
+    }
+  ]
+}
+Với tự luận
+
+Đổi options thành:
+
+"sample_answer": ""
+9) Prompt cho Mode 5 — Tóm tắt bài
+Bạn là trợ lý ôn tập trước kiểm tra.
+
+Dựa trên dữ liệu dưới đây, hãy tóm tắt bài học.
+
+DATA:
+{source_pack_json}
+
+Yêu cầu:
+- tóm tắt ý chính
+- tạo flashcard
+- tạo checklist công thức / khái niệm / mốc sự kiện tùy theo môn
+- ngắn gọn
+- không thêm nội dung ngoài DATA
+- không viết ngoài JSON
+
+Trả về:
+
+{
+  "mode": "summary",
+  "subject": "",
+  "grade_level": "",
+  "chapter_title": "",
+  "lesson_title": "",
+  "key_points": [],
+  "flashcards": [
+    {
+      "front": "",
+      "back": ""
+    }
+  ],
+  "review_checklist": []
+}
+10) Prompt cho Mode 6 — Lộ trình học cá nhân
+
+Mode này không nên chỉ dựa vào tài liệu. Nó cần cả kết quả học gần đây.
+
+Bạn yêu cầu người dùng nhập thêm:
+
+phần đã hiểu
+phần còn yếu
+điểm bài gần đây
+mục tiêu sắp tới
+Bạn là trợ lý lập lộ trình học cá nhân.
+
+Dữ liệu bài học:
+{source_pack_json}
+
+Dữ liệu học sinh:
+{
+  "mastered_topics": {mastered_topics},
+  "weak_topics": {weak_topics},
+  "recent_results": {recent_results},
+  "learning_goal": "{learning_goal}"
+}
+
+Yêu cầu:
+- xác định lỗ hổng lớn nhất
+- ưu tiên học phần tiếp theo
+- đưa ra kế hoạch 3 bước
+- đề xuất dạng bài nên luyện tiếp
+- ngắn gọn, thực tế
+- không viết ngoài JSON
+
+Trả về:
+
+{
+  "mode": "roadmap",
+  "subject": "",
+  "grade_level": "",
+  "chapter_title": "",
+  "lesson_title": "",
+  "biggest_gap": "",
+  "next_topic_to_study": "",
+  "three_step_plan": [
+    "",
+    "",
+    ""
+  ],
+  "recommended_practice_types": [],
+  "reason": ""
+}
+11) Prompt sửa format khi AI trả sai
+
+Đây là prompt cực cần. Gần như chắc chắn người dùng sẽ gặp output lỗi format.
+
+Hãy chuyển câu trả lời trước đó thành JSON hợp lệ 100%.
+
+Quy tắc:
+- không thêm mô tả
+- không thêm markdown
+- không thêm text trước hoặc sau
+- giữ nguyên nội dung
+- chỉ sửa để đúng schema
+
+Schema cần đúng là:
+{schema_here}
+
+Web của bạn nên có nút:
+
+Kết quả lỗi format
+Copy prompt sửa format
+12) Cách bạn nên dạy người dùng copy-paste
+
+Bạn không nên bảo họ “hãy dùng AI tạo nội dung”. Bạn phải cho quy trình cực cụ thể:
+
+Mẫu hướng dẫn cho người dùng
+Bước 1: Tạo 1 chat hoặc 1 project riêng cho đúng môn/chương.
+Bước 2: Upload tài liệu của đúng 1 bài hoặc 1 chương.
+Bước 3: Dán prompt hệ thống của nền tảng.
+Bước 4: Dán prompt chức năng cần dùng: Explain / Practice / Summary / Roadmap.
+Bước 5: Copy phần JSON AI trả về.
+Bước 6: Dán vào web để nhập dữ liệu.
+Bước 7: Nếu web báo sai format, dùng prompt sửa format rồi dán lại.
+Quy tắc người dùng phải nhớ
+mỗi lượt chỉ 1 chương
+mỗi lượt chỉ 1 mode
+không trộn nhiều loại tài liệu linh tinh
+không paste thêm mô tả ngoài yêu cầu
+luôn copy đúng JSON
+13) Nên lưu gì trong database khi người dùng dán ngược lại
+
+Tối thiểu nên có:
+
+Bảng ai_import_jobs
+id
+user_id
+provider (chatgpt, gemini, claude)
+mode
+raw_paste
+parsed_json
+status
+error_message
+created_at
+Bảng lesson_ai_content
+subject
+grade_level
+chapter_title
+lesson_title
+mode
+content_json
+source_hash
+Bảng source_packs
+subject
+chapter_title
+lesson_title
+normalized_source_json
+
+Như vậy bạn có thể:
+
+tái sử dụng source_pack
+sinh nhiều mode từ cùng một bộ nguồn
+giảm việc người dùng phải upload lại từ đầu
+14) Cái bẫy lớn nhất cần tránh
+Sai lầm 1: Bắt AI sinh thẳng nội dung cuối
+
+Nên có bước source_pack ở giữa.
+
+Sai lầm 2: Cho người dùng prompt tự do
+
+Phải ép dùng prompt cố định.
+
+Sai lầm 3: Nhận văn xuôi
+
+Phải ép JSON hoặc format có schema.
+
+Sai lầm 4: Quăng cả giáo trình dày
+
+Chia nhỏ theo chương / bài.
+
+Sai lầm 5: Không kiểm tra nguồn dữ liệu
+
+Mode Roadmap mà không có dữ liệu tiến độ thì rất yếu.
+
+15) Vấn đề riêng tư và dữ liệu
+
+Phần này bạn nên nói rõ với người dùng ngay từ đầu:
+
+với ChatGPT, người dùng nên kiểm tra Data Controls và dùng Temporary Chat khi không muốn chat đó được dùng theo cách thông thường hoặc lưu vào memory; OpenAI cũng cho phép tắt memory.
+với Gemini, Google nói Memory có thể dùng cả thông tin nhạy cảm để cá nhân hóa trải nghiệm nếu đang bật; có thể dùng Temporary Chat để tránh việc đó.
+với Claude, Anthropic khuyên cẩn trọng với dữ liệu nhạy cảm như thông tin tài chính, hồ sơ y tế, mật khẩu, tài liệu kinh doanh hoặc cá nhân bảo mật.
+
+Vì vậy, trên web của bạn nên có cảnh báo:
+
+không upload mật khẩu
+không upload dữ liệu cá nhân nhạy cảm
+không upload tài liệu nội bộ chưa được phép chia sẻ
+nên xóa / ẩn thông tin nhận diện trước khi đưa vào LLM ngoài
+16) Kết luận thực chiến
+
+Cấu trúc đúng cho bạn là:
+
+LLM ngoài làm máy sinh nội dung
+web của bạn làm máy chuẩn hóa + nhập liệu + quản lý
+
+Cụ thể:
+
+người dùng chuẩn bị tài liệu theo mẫu
+người dùng đưa vào GPT / Gemini / Claude
+dùng prompt chuẩn của bạn
+AI trả về JSON chuẩn
+người dùng dán lại vào web
+web validate, parse, lưu và hiển thị
+
+Đây là cách ít rủi ro kỹ thuật hơn nhiều so với cố build một hệ thống AI nội bộ hoàn chỉnh ngay từ đầu.
