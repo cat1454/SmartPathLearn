@@ -3,3 +3,4 @@ __pycache__/
 .tmp_testdata/
 .handoff_api_store.json
 .tmp_uvicorn_*
+mnt/
